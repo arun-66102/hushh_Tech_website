@@ -1,5 +1,5 @@
 import React, { Suspense, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, matchPath } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
@@ -75,6 +75,7 @@ function App() {
   const AppLayout = () => {
     const { showNavbar, showFooter, showMobileNav } = useLayoutVisibility();
     const { session } = useAuthSession();
+    const navigate = useNavigate();
     
     return (
       <div className="min-h-screen flex flex-col">
@@ -108,7 +109,7 @@ function App() {
                     session={session}
                     onSubmit={(result: string) => {
                       if (["Approved", "Pending", "Requested permission"].includes(result)) {
-                        window.location.href = "/";
+                        navigate(PATHS.HOME);
                       }
                     }}
                   />
