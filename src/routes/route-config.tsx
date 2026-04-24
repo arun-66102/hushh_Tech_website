@@ -154,7 +154,6 @@ export const ROUTES: RouteConfig[] = [
   { path: PATHS.RECEIPT_GENERATOR, component: ReceiptGeneratorPage },
   { path: PATHS.DEVELOPER_DOCS, component: DeveloperDocsPage },
   { path: PATHS.METRICS, component: MetricsPage, noMargin: true, hideLayout: true },
-  { path: '/metric', component: () => <div /> }, // Navigate hander in App.tsx
 
   // NDA
   { path: PATHS.SIGN_NDA, component: SignNDAPage, noMargin: true, hideLayout: true },
