@@ -91,8 +91,10 @@ export const ROUTES: RouteConfig[] = [
   { path: PATHS.FAQ, component: Faq },
   { path: PATHS.PROFILE, component: Profile, isAuthRequired: true, noMargin: true, hideLayout: true },
   { path: PATHS.CAREER, component: Career },
+  { path: PATHS.CAREER_WILDCARD, component: Career }, // handles /career/:jobId deep links
   { path: PATHS.PRIVACY_POLICY, component: PrivacyPolicy },
   { path: PATHS.CAREER_PRIVACY_POLICY, component: CareersPrivacyPolicy },
+  { path: PATHS.CAREER_PRIVACY_POLICY_LEGACY, component: CareersPrivacyPolicy }, // legacy typo slug — backward compat
   { path: PATHS.COMMUNITY, component: CommunityPage, noMargin: true, hideLayout: true },
   { path: `${PATHS.COMMUNITY}/*`, component: CommunityPostPage, noMargin: true, hideLayout: true },
   { path: PATHS.CALIFORNIA_PRIVACY_POLICY, component: CaliforniaPrivacyPolicy },

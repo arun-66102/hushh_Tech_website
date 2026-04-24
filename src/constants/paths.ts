@@ -15,8 +15,10 @@ export const PATHS = {
   FAQ: '/faq',
   PROFILE: '/profile',
   CAREER: '/career',
+  CAREER_WILDCARD: '/career/*',
   PRIVACY_POLICY: '/privacy-policy',
   CAREER_PRIVACY_POLICY: '/career-privacy-policy',
+  CAREER_PRIVACY_POLICY_LEGACY: '/carrer-privacy-policy', // legacy typo slug — kept for backward compat
   COMMUNITY: '/community',
   CALIFORNIA_PRIVACY_POLICY: '/california-privacy-policy',
   EU_UK_PRIVACY_POLICY: '/eu-uk-jobs-privacy-policy',
@@ -39,6 +41,7 @@ export const PATHS = {
   ONBOARDING_VERIFY: '/onboarding/verify',
   ONBOARDING_VERIFY_COMPLETE: '/onboarding/verify-complete',
   ONBOARDING_MEET_CEO: '/onboarding/meet-ceo',
+  MEET_CEO: '/onboarding/meet-ceo', // alias used in MobileSideMenu
 
   // Hushh User Profile
   HUSHH_USER_PROFILE: '/hushh-user-profile',
@@ -51,6 +54,7 @@ export const PATHS = {
   KYC_DEMO: '/kyc-demo',
   KYC_FLOW: '/kyc-flow',
   A2A_PLAYGROUND: '/a2a-playground',
+  KYC_STUDIO: '/a2a-playground', // alias used in Navbar nav links
 
   // Investment
   FUND_A: '/discover-fund-a',
