@@ -50,9 +50,12 @@ Repository URL: https://github.com/hushh-labs/hushh_Tech_website
 
 ```bash
 npm ci
+npm run dev:api
 npm run test
 npm run security:gitleaks
 ```
+
+`npm run dev:api` uses `cross-env`, so the local API wrapper starts consistently on macOS, Linux, and Windows shells.
 
 See:
 

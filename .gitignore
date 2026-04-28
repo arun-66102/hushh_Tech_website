@@ -32,5 +32,6 @@ vertex-ai-key.json
 *.p8
 private_keys/
 .pre-commit-cache/
+.npm-cache/
 .gitleaks-report.json
 tmp/

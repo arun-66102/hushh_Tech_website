@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "PORT=3005 node server.js",
+    "dev:api": "cross-env PORT=3005 node server.js",
     "dev:vercel": "vercel dev --listen 3000",
     "dco:check": "bash scripts/ci/check-dco.sh",
     "env:check": "node scripts/ci/check-env-contract.mjs",
@@ -102,6 +102,7 @@
     "@vitest/ui": "^1.6.0",
     "autoprefixer": "^10.4.16",
     "baseline-browser-mapping": "^2.10.0",
+    "cross-env": "^7.0.3",
     "danger": "^13.0.5",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",

@@ -9,7 +9,18 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
-const getAdminPassword = () => Deno.env.get("NDA_ADMIN_PASSWORD") || "123456";
+const getAdminPassword = () => Deno.env.get("NDA_ADMIN_PASSWORD")?.trim() || null;
+
+const secureCompare = (actual: string, expected: string): boolean => {
+  let diff = actual.length ^ expected.length;
+  const maxLength = Math.max(actual.length, expected.length);
+
+  for (let index = 0; index < maxLength; index += 1) {
+    diff |= (actual.charCodeAt(index) || 0) ^ (expected.charCodeAt(index) || 0);
+  }
+
+  return diff === 0;
+};
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,9 +46,18 @@ serve(async (req: Request) => {
     // Parse request body
     const body = await req.json();
     const { password, highlightUserId } = body;
+    const adminPassword = getAdminPassword();
+
+    if (!adminPassword) {
+      console.error("NDA_ADMIN_PASSWORD is not configured");
+      return new Response(
+        JSON.stringify({ error: "NDA admin access is not configured" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Verify password
-    if (password !== getAdminPassword()) {
+    if (typeof password !== "string" || !secureCompare(password.trim(), adminPassword)) {
       return new Response(
         JSON.stringify({ error: "Unauthorized - incorrect password" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
