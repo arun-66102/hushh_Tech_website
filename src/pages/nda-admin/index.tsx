@@ -7,7 +7,7 @@
  * Uses Supabase Edge Function to bypass RLS and fetch all NDA records.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import config from '../../resources/config/config';
 
@@ -27,7 +27,6 @@ const NDA_ADMIN_FETCH_URL = `${config.SUPABASE_URL}/functions/v1/nda-admin-fetch
 const NDAAdminPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const highlightUserId = searchParams.get('highlight');
-  const adminPasswordRef = useRef('');
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -53,17 +52,18 @@ const NDAAdminPage: React.FC = () => {
     }
   };
 
-  const fetchNDARecords = async (passwordOverride?: string) => {
+  const resetAdminSession = () => {
+    setIsAuthenticated(false);
+    setNdaRecords([]);
+    setError(null);
+    setPasswordError('');
+  };
+
+  const fetchNDARecords = async (adminPassword: string) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const adminPassword = passwordOverride || adminPasswordRef.current;
-      if (!adminPassword) {
-        setIsAuthenticated(false);
-        throw new Error('Admin password is required');
-      }
-
       if (!config.SUPABASE_ANON_KEY) {
         throw new Error('VITE_SUPABASE_ANON_KEY is not configured');
       }
@@ -93,18 +93,13 @@ const NDAAdminPage: React.FC = () => {
       }
 
       setNdaRecords(data.records || []);
-      adminPasswordRef.current = adminPassword;
       setPassword('');
       setIsAuthenticated(true);
     } catch (err) {
       console.error('Error fetching NDA records:', err);
       const message = err instanceof Error ? err.message : 'Failed to fetch NDA records';
-      if (passwordOverride) {
-        setPasswordError(message);
-        setIsAuthenticated(false);
-      } else {
-        setError(message);
-      }
+      setPasswordError(message);
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
     }
@@ -177,8 +172,8 @@ const NDAAdminPage: React.FC = () => {
     return (
       <div style={styles.container}>
         <p style={styles.error}>Error: {error}</p>
-        <button onClick={() => fetchNDARecords()} style={styles.button}>
-          Retry
+        <button onClick={resetAdminSession} style={styles.button}>
+          Try Again
         </button>
       </div>
     );
@@ -245,11 +240,7 @@ const NDAAdminPage: React.FC = () => {
       </div>
       
       <button 
-        onClick={() => {
-          adminPasswordRef.current = '';
-          setIsAuthenticated(false);
-          setNdaRecords([]);
-        }} 
+        onClick={resetAdminSession} 
         style={styles.logoutButton}
       >
         Logout

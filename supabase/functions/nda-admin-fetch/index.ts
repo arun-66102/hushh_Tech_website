@@ -7,19 +7,15 @@
  */
 
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
+import { timingSafeEqual } from "https://deno.land/std@0.208.0/crypto/timing_safe_equal.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const getAdminPassword = () => Deno.env.get("NDA_ADMIN_PASSWORD")?.trim() || null;
 
-const secureCompare = (actual: string, expected: string): boolean => {
-  let diff = actual.length ^ expected.length;
-  const maxLength = Math.max(actual.length, expected.length);
-
-  for (let index = 0; index < maxLength; index += 1) {
-    diff |= (actual.charCodeAt(index) || 0) ^ (expected.charCodeAt(index) || 0);
-  }
-
-  return diff === 0;
+const hashPassword = async (value: string): Promise<Uint8Array> => {
+  const encoded = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", encoded);
+  return new Uint8Array(digest);
 };
 
 const corsHeaders = {
@@ -56,8 +52,17 @@ serve(async (req: Request) => {
       );
     }
 
-    // Verify password
-    if (typeof password !== "string" || !secureCompare(password.trim(), adminPassword)) {
+    if (typeof password !== "string") {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - incorrect password" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const suppliedHash = await hashPassword(password.trim());
+    const expectedHash = await hashPassword(adminPassword);
+
+    if (!timingSafeEqual(suppliedHash, expectedHash)) {
       return new Response(
         JSON.stringify({ error: "Unauthorized - incorrect password" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
