@@ -97,8 +97,7 @@ const NDAAdminPage: React.FC = () => {
       setIsAuthenticated(true);
     } catch (err) {
       console.error('Error fetching NDA records:', err);
-      const message = err instanceof Error ? err.message : 'Failed to fetch NDA records';
-      setPasswordError(message);
+      setPasswordError('Login failed. Please check the password and try again.');
       setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
