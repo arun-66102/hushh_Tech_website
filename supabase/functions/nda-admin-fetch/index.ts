@@ -12,10 +12,44 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const getAdminPassword = () => Deno.env.get("NDA_ADMIN_PASSWORD")?.trim() || null;
 
+/**
+ * Derives a 256-bit key from the given password using PBKDF2 + SHA-256.
+ *
+ * Why PBKDF2 instead of plain SHA-256:
+ *   - SHA-256 is a fast hash — an attacker can test billions of guesses/sec
+ *     on commodity hardware. PBKDF2 with 100 000 iterations is ~100 000×
+ *     slower, which is the OWASP-recommended minimum as of 2024.
+ *
+ * Salt strategy:
+ *   - The salt is derived from SUPABASE_URL (unique per project) so it is
+ *     stable across cold starts without being a literal hardcoded string.
+ *   - A fixed-per-app salt is acceptable here because there is only one
+ *     admin credential, not a per-user password table.
+ */
 const hashPassword = async (value: string): Promise<Uint8Array> => {
-  const encoded = new TextEncoder().encode(value);
-  const digest = await crypto.subtle.digest("SHA-256", encoded);
-  return new Uint8Array(digest);
+  const saltSource = Deno.env.get("SUPABASE_URL") ?? "hushh-nda-admin-salt";
+  const salt = new TextEncoder().encode(saltSource);
+
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(value),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits"],
+  );
+
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt,
+      iterations: 100_000, // OWASP minimum (2024)
+      hash: "SHA-256",
+    },
+    keyMaterial,
+    256,
+  );
+
+  return new Uint8Array(derivedBits);
 };
 
 const corsHeaders = {
