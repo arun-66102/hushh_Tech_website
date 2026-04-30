@@ -166,6 +166,12 @@ export default function Footer() {
             >
               Careers Site Privacy Notice
             </a>
+            <a 
+              href="/cookie-policy" 
+              className="py-2 text-gray-300 hover:text-white text-base font-medium flex items-center justify-between group"
+            >
+              Cookie Policy
+            </a>
           </nav>
         </div>
       </div>
